@@ -526,7 +526,7 @@ class RoleController extends SimpleController
         $classMapper = $this->ci->classMapper;
 
         // If the role no longer exists, forward to main role listing page
-        if (!$role = $this->getRoleFromParams($args, "slug")) {
+        if (!$role = $this->getRoleFromParams($args)) {
             throw new NotFoundException($request, $response);
         }
 

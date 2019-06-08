@@ -13,6 +13,7 @@ namespace UserFrosting\Sprinkle\AltPermissions\ServicesProvider;
 
 use UserFrosting\Sprinkle\AltPermissions\AccessControlLayer;
 use UserFrosting\Sprinkle\AltPermissions\Middleware\CheckAuthSeeker;
+use UserFrosting\Sprinkle\AltPermissions\Twig\AltPermissionsExtension;
 
 /**
  * Registers services for the AltPermissions sprinkle, such as classmapper, etc.
@@ -60,5 +61,16 @@ class ServicesProvider
         $container['acl'] = function ($c) {
             return new AccessControlLayer($c->config);
         };
+
+        /*
+         * Twig extension for checkSeekerAccess function
+         * 
+         */
+        $container->extend('view', function ($view, $c) {
+            $twig = $view->getEnvironment();
+            $extension = new AltPermissionsExtension($c);
+            $twig->addExtension($extension);
+            return $view;
+        });
     }
 }
