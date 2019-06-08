@@ -14,7 +14,7 @@ namespace UserFrosting\Sprinkle\AltPermissions\Database\Models\Traits;
 /**
  * AltPermissions Trait.
  *
- * Trait to add AltPermission Sprinkle methods to a sekker Model
+ * Trait to add AltPermission Sprinkle methods to a seeker Model
  *
  * @author Louis Charette (https://github.com/lcharette)
  */

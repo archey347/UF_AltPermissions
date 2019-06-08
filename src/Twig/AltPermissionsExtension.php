@@ -55,6 +55,10 @@ class AltPermissionsExtension extends \Twig_Extension implements \Twig_Extension
             new \Twig_SimpleFunction('checkSeekerAccess', function ($slug, $seeker_id) {
                 $acl =  $this->services->acl; 
                 return $acl->hasPermission($this->services->currentUser, $slug, $seeker_id);     
+            }),
+            new \Twig_SimpleFunction('getSeekersForUser', function ($seeker_type) {
+                $acl =  $this->services->acl; 
+                return $acl->getSeekersForUser($this->services->currentUser, $seeker_type)->pluck('id');     
             })
         );
     }   

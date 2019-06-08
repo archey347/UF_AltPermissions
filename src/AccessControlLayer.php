@@ -13,6 +13,7 @@ namespace UserFrosting\Sprinkle\AltPermissions;
 
 use UserFrosting\Sprinkle\AltPermissions\Database\Models\Auth;
 use UserFrosting\Sprinkle\AltPermissions\Database\Models\Permission;
+use UserFrosting\Sprinkle\AltPermissions\Database\Models\User;
 use UserFrosting\Sprinkle\Core\Facades\Debug;
 use UserFrosting\Support\Repository\Repository as Config;
 
@@ -297,6 +298,50 @@ class AccessControlLayer
         return $result;
     }
 
+    public function getSeekersForUser($user, $seeker_type) 
+    {
+        // Display initial debug statement
+        if ($this->debug) {
+            $trace = array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3), 1);
+            Debug::debug('Seeker IDs requested for user at: ', $trace);
+            Debug::debug("Getting all seeker ids for user {$user->id} ('{$user->user_name}') for type `$seeker_type`...");
+        }
+
+        // The master (root) account has access to everything.
+        if ($user->id == $this->config['reserved_user_ids.master']) {
+            if ($this->debug) {
+                Debug::debug('User is the master (root) user.  Access granted.');
+            }
+
+            $authorizedSeekers = $this->getSeekerModel('club')::all();
+
+            // Done !
+            if ($this->debug) {
+                Debug::debug("Autorisation for seekers id {$authorizedSeekers->pluck('id')}");
+            }
+
+            return $authorizedSeekers;
+        }
+
+        $user = User::find($user->id);
+
+        Debug::debug("OI");
+
+        $authorizedSeekers = $user->seeker($seeker_type)->get();
+
+        // !TODO : Cache the result
+
+        // We send the result to the debug
+        if ($this->debug) {
+            Debug::debug("Autorisation for seekers id {$authorizedSeekers->pluck('seeker_id')}");
+        }
+
+        // Done !
+        return $authorizedSeekers;
+    }
+
     // !TODO
     // public function getPermissions -> Return same as `getPermissionsForSeeker`, but as a multidimentaionnal array of `seeker => [permissions]`
+    // public function getSeekersForUser -> Return all of the seeker ids that the user has at least one permission of (for navbar)
+    // public function getSeekersForPermissions -> Return all of the seeker ids that the user has either at least one or all of the permissions specified in an array
 }
