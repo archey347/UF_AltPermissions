@@ -526,7 +526,7 @@ class RoleController extends SimpleController
         $classMapper = $this->ci->classMapper;
 
         // If the role no longer exists, forward to main role listing page
-        if (!$role = $this->getRoleFromParams($args)) {
+        if (!$role = $this->getRoleFromParams($args, "slug")) {
             throw new NotFoundException($request, $response);
         }
 
@@ -763,5 +763,39 @@ class RoleController extends SimpleController
         ]);
 
         return $response->withJson([], 200, JSON_PRETTY_PRINT);
+    }
+
+    protected function getRoleFromParams($params)
+    {
+        $schema = new RequestSchema("schema://altRole/get-by-id.json");
+
+
+        // Whitelist and set parameter defaults
+        $transformer = new RequestDataTransformer($schema);
+        $data = $transformer->transform($params);
+
+        // Validate, and throw exception on validation errors.
+        $validator = new ServerSideValidator($schema, $this->ci->translator);
+        if (!$validator->validate($data)) {
+            // TODO: encapsulate the communication of error messages from ServerSideValidator to the BadRequestException
+            $e = new BadRequestException();
+            foreach ($validator->errors() as $idx => $field) {
+                foreach ($field as $eidx => $error) {
+                    $e->addUserMessage($error);
+                }
+            }
+
+            throw $e;
+        }
+
+        /** @var \UserFrosting\Sprinkle\Core\Util\ClassMapper $classMapper */
+        $classMapper = $this->ci->classMapper;
+
+        // Get the role
+        if (!$role = $classMapper->staticMethod('altRole', 'where', 'id', $params['id'])->first()) {
+            throw new NotFoundException();
+        }
+
+        return $role;
     }
 }

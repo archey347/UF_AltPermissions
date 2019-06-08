@@ -1,0 +1,14 @@
+{
+    "id" : {
+        "validators": {
+            "required" : {
+                "label" : "&ROLE_ID",
+                "message" : "VALIDATE.REQUIRED"
+            },
+            "integer" : {
+                "label" : "&ROLE_ID",
+                "message" : "VALIDATE.INTEGER"
+            }
+        }
+    }
+}
