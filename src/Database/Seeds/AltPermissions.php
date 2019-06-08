@@ -9,16 +9,16 @@
  * @license https://github.com/lcharette/UF-AltPermissions/blob/master/licenses/UserFrosting.md (MIT License)
  */
 
-namespace UserFrosting\Sprinkle\AltPermissions\Database\Seeder;
+namespace UserFrosting\Sprinkle\AltPermissions\Database\Seeds;
 
 use UserFrosting\Sprinkle\Account\Database\Models\Permission;
 use UserFrosting\Sprinkle\Account\Database\Models\Role;
-use UserFrosting\Sprinkle\Core\Database\Seeder\Seeder;
+use UserFrosting\Sprinkle\Core\Database\Seeder\BaseSeed;
 
 /**
  *    Seeder for AltPermissions core permissions.
  */
-class AltPermissions extends Seeder
+class AltPermissions extends BaseSeed
 {
     /**
      *    {@inheritdoc}
