@@ -298,6 +298,16 @@ class AccessControlLayer
         return $result;
     }
 
+    /**
+     * getSeekersForUser
+     * 
+     * Returns a collection of seekers which the user has at least one role associated with. (Useful for navigation bars)
+     * 
+     *    @param User $user The user model we want to perform the auth check on
+     *    @param string $seeker_type The seeker type (string slug or full class. See next params)
+     *
+     *    @return Collection an collection of seekers
+     */
     public function getSeekersForUser($user, $seeker_type) 
     {
         // Display initial debug statement
@@ -324,8 +334,6 @@ class AccessControlLayer
         }
 
         $user = User::find($user->id);
-
-        Debug::debug("OI");
 
         $authorizedSeekers = $user->seeker($seeker_type)->get();
 
