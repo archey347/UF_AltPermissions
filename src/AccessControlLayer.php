@@ -94,13 +94,13 @@ class AccessControlLayer
      *
      *    @param mixed $user The user model we want to perform the auth check on
      *    @param mixed $slug The permission slug
-     *    @param mixed $seeker_id The seeker id
+     *    @param mixed $seeker_id The seeker id (if empty it will check if it has a permission on any seeker)
      *
      *    @return bool User has permission or not
      *
      *    !TODO : The slug must accept an array
      */
-    public function hasPermission($user, $slug, $seeker_id)
+    public function hasPermission($user, $slug, $seeker_id = "")
     {
         if ($this->debug) {
             $trace = array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3), 1);
@@ -133,7 +133,11 @@ class AccessControlLayer
 
         // We query the role.auth relation for the user and correct seeker
         $query->whereHas('roles.auth', function ($query) use ($user, $seeker_id) {
-            $query->where(['user_id' => $user->id, 'seeker_id' => $seeker_id]);
+            if($seeker_id == "") {
+                $query->where(['user_id' => $user->id]);
+            } else {
+                $query->where(['user_id' => $user->id, 'seeker_id' => $seeker_id]);
+            }
         });
 
         // Run query
