@@ -107,13 +107,13 @@ class Permission extends Model
      * @param int $roleId
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    /*public function scopeForRole($query, $roleId)
+    public function scopeForRole($query, $roleId)
     {
-        return $query->join('permission_roles', function ($join) use ($roleId) {
-            $join->on('permission_roles.permission_id', 'permissions.id')
+        return $query->join('alt_permission_roles', function ($join) use ($roleId) {
+            $join->on('alt_permission_roles.permission_id', 'alt_permissions.id')
                  ->where('role_id', $roleId);
         });
-    }*/
+    }
 
     /*
      * Query scope to get all permissions NOT associated with a specific role.

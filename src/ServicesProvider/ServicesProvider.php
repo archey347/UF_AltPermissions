@@ -41,6 +41,7 @@ class ServicesProvider
             $classMapper->setClassMapping('altAuth', 'UserFrosting\Sprinkle\AltPermissions\Database\Models\Auth');
             $classMapper->setClassMapping('altUser', 'UserFrosting\Sprinkle\AltPermissions\Database\Models\User');
             $classMapper->setClassMapping('altRole_sprunje', 'UserFrosting\Sprinkle\AltPermissions\Sprunje\RoleSprunje');
+            $classMapper->setClassMapping('altPermission_sprunje', 'UserFrosting\Sprinkle\AltPermissions\Sprunje\PermissionSprunje');
             $classMapper->setClassMapping('auth_sprunje', 'UserFrosting\Sprinkle\AltPermissions\Sprunje\AuthSprunje');
             $classMapper->setClassMapping('authUser_sprunje', 'UserFrosting\Sprinkle\AltPermissions\Sprunje\AuthUsersSprunje');
 
