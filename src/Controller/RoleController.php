@@ -587,7 +587,7 @@ class RoleController extends SimpleController
         }
 
         // Get the permissions
-        $permissions = $classMapper->staticMethod('altPermission', 'forSeeker', $args['seeker'])->get();
+        $permissions = $role->permissions()->get();
 
         // Role permissions
         $role_permissions = $role->permissions->pluck('id');
@@ -598,6 +598,8 @@ class RoleController extends SimpleController
 
             return $item;
         });
+
+        
 
         return $this->ci->view->render($response, 'pages/altRole.html.twig', [
             'seeker'      => $args['seeker'],
