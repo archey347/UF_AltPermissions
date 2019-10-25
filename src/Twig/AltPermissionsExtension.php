@@ -9,13 +9,14 @@ namespace UserFrosting\Sprinkle\AltPermissions\Twig;
 
 use Interop\Container\ContainerInterface;
 use UserFrosting\Sprinkle\Spanner\Database\Models\Club;
+use Twig\Extension\GlobalsInterface;
 
 /**
  * Extends Twig functionality for the AltPermissions sprinkle.
  *
  * @author Archey Barrell
  */
-class AltPermissionsExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
+class AltPermissionsExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface 
 {
 
     /**
@@ -62,4 +63,8 @@ class AltPermissionsExtension extends \Twig_Extension implements \Twig_Extension
             })
         );
     }   
+
+    public function getGlobals() {
+        return [];
+    }
 }
