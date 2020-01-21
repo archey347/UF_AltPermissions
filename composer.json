@@ -1,9 +1,9 @@
 {
-    "name": "lcharette/uf_altpermissions",
+    "name": "archey347/uf_altpermissions",
     "type": "userfrosting-sprinkle",
     "description": "Alternate/complementary permission system for UserFrosting V4",
     "keywords": ["permissions", "roles", "userfrosting"],
-    "homepage": "https://github.com/lcharette/UF-AltPermissions",
+    "homepage": "https://github.com/archey347/UF-AltPermissions",
     "license" : "MIT",
     "authors" : [
         {
