@@ -29,7 +29,7 @@ class AltPermissionsExtension extends \Twig_Extension implements \Twig_Extension
      *
      * @param ContainerInterface $services The global container object, which holds all your services.
      */
-    public function __construct(ContainerInterface $services)
+    public function __construct($services)
     {
         $this->services = $services;
     }
