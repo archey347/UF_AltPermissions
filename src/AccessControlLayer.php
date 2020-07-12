@@ -1,12 +1,11 @@
 <?php
 
 /*
- * UF AltPermissions Sprinkle
+ * UserFrosting (http://www.userfrosting.com)
  *
- * @author    Louis Charette
- * @copyright Copyright (c) 2018 Louis Charette
- * @link      https://github.com/lcharette/UF_AltPermissions
- * @license   https://github.com/lcharette/UF_AltPermissions/blob/master/LICENSE.md (MIT License)
+ * @link      https://github.com/userfrosting/UserFrosting
+ * @copyright Copyright (c) 2019 Alexander Weissman
+ * @license   https://github.com/userfrosting/UserFrosting/blob/master/LICENSE.md (MIT License)
  */
 
 namespace UserFrosting\Sprinkle\AltPermissions;
@@ -100,7 +99,7 @@ class AccessControlLayer
      *
      *    !TODO : The slug must accept an array
      */
-    public function hasPermission($user, $slug, $seeker_id = "")
+    public function hasPermission($user, $slug, $seeker_id = '')
     {
         if ($this->debug) {
             $trace = array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3), 1);
@@ -114,7 +113,7 @@ class AccessControlLayer
                 Debug::debug('User is the master (root) user.  Access granted.');
             }
 
-            return true;
+            //return true;
         }
 
         // We find the permission related to that slug
@@ -127,27 +126,87 @@ class AccessControlLayer
         // We start by limiting the slug. This will limit the number of relation we query next
         // The `orWhere` need to be in a bracket, otherwise it will create false positivewith `wherehas`
         // See http://laraveldaily.com/and-or-and-brackets-with-eloquent/
-        $query = Permission::where(function ($query) use ($slug) {
-            $query->where('slug', $slug)->orWhere('slug', 'like', $slug.'.%');
+        /**$query = Permission::where(function ($query) use ($slug) {
+            $query->where('slug', $slug)->orWhere('slug', 'like', $slug . '.%');
         });
 
-        // We query the role.auth relation for the user and correct seeker
+        $query->whereHas('roles', function ($query) {
+
+        });*/
+
+        /*// We query the role.auth relation for the user and correct seeker
         $query->whereHas('roles.auth', function ($query) use ($user, $seeker_id) {
-            if($seeker_id == "") {
+
+            // Check to make sure that permission seeker type matches
+
+            $query->where()
+            if ($seeker_id == '') {
                 $query->where(['user_id' => $user->id]);
             } else {
                 $query->where(['user_id' => $user->id, 'seeker_id' => $seeker_id]);
             }
-        });
+        });*/
 
         // Run query
+        //$permission = $query->first();
+
+        $query = Permission::where(function ($query) use ($slug) {
+            $query->where('slug', $slug)->orWhere('slug', 'like', $slug . '.%');
+        });
+
+        // Only get permissions that the user has
+        $query->whereHas('roles.auth', function ($query) use ($user) {
+            $query->where(['user_id' => $user->id]);
+        });
+
         $permission = $query->first();
+
+        // Skip checking the seeker id if there is no seeker id to check
+        if ($seeker_id == '') {
+
+            // If the above query returned something, then it's a match!
+            // Otherwise, might be because the slug doesn't exist, the user is bad, the seeker is bad, etc.
+            // In any of those cases, it will be false anyway
+            return $permission ? true : false;
+        }
+
+        $permissions = $query->get();
+
+        foreach ($permissions as $permission) {
+            // Get the roles
+            $roles = $permission->roles()->whereHas('auth', function ($query) use ($user) {
+                $query->where(['user_id' => $user->id]);
+            })->get();
+
+            $seekerClass = $this->getSeekerModel($permission->seeker);
+
+            foreach ($roles as $role) {
+                if ($role->seeker == $seekerClass) {
+                    // Seekers match, so seeker_id is valid with roles_users table
+                    $auth = $role->auth()->where('user_id', $user->id)->where('seeker_id', $seeker_id)->first();
+                    if ($auth) {
+                        return true;
+                    }
+                } else {
+                    $auth = $role->auth()->where('user_id', $user->id)->first();
+                    // Seekers don't match, attempt to get children from role seeker
+                    $seeker = $auth->seeker()->first();
+
+                    if (!$seeker instanceof IPermissionParent) {
+                        throw new \Exception("Seeker model $seekerClass doesn't implement parent interface");
+                    }
+
+                    $child = $seeker->getChildren($permission->seeker)->where('id', $seeker_id);
+
+                    if ($child) {
+                        return true;
+                    }
+                }
+            }
+        }
 
         // !TODO :: This result should be cached
 
-        // If the above query returned something, then it's a match!
-        // Otherwise, might be because the slug doesn't exist, the user is bad, the seeker is bad, etc.
-        // In any of those cases, it will be false anyway
         return $permission ? true : false;
     }
 
@@ -182,7 +241,7 @@ class AccessControlLayer
         // done on the `whereHas` function on the `Auth` relation (ask permission relation throught the `role` relation)
         $query->whereHas('role.permissions', function ($query) use ($slug) {
             $query->where('slug', $slug)
-                  ->orWhere('slug', 'like', $slug.'.%');
+                  ->orWhere('slug', 'like', $slug . '.%');
         });
 
         // Run query
@@ -211,7 +270,7 @@ class AccessControlLayer
      *
      *    N.B.: Note that this method DOES require the `seeker_type`, as a user might
      *    have in the `Auth` table two roles for the same value of `seeker_id`,
-     *    but different `seeker_id, seeker_type` combinaison.
+     *    but different `seeker_id, seeker_type` combination.
      *
      *    @param User $user The user model we want to perform the auth check on
      *    @param int $seeker_id The seeker id
@@ -295,7 +354,7 @@ class AccessControlLayer
             if (empty($result)) {
                 $result[] = $part;
             } else {
-                $result[] = end($result).$separator.$part;
+                $result[] = end($result) . $separator . $part;
             }
         }
 
@@ -304,15 +363,15 @@ class AccessControlLayer
 
     /**
      * getSeekersForUser
-     * 
+     *
      * Returns a collection of seekers which the user has at least one role associated with. (Useful for navigation bars)
-     * 
+     *
      *    @param User $user The user model we want to perform the auth check on
      *    @param string $seeker_type The seeker type (string slug or full class. See next params)
      *
      *    @return Collection an collection of seekers
      */
-    public function getSeekersForUser($user, $seeker_type) 
+    public function getSeekersForUser($user, $seeker_type)
     {
         // Display initial debug statement
         if ($this->debug) {

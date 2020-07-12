@@ -25,8 +25,50 @@ Run `composer update` then `composer run-script bake` to install the sprinkle.
 
 If you have a collection of permisisons of actions that are available on a page, you can group these together using dot-delimiter.
 
-For example, if you have a page that allows you to manaeg a team, you might have the permissions `team.view`, `team.edit`, `team.delete`. Then, to test access to the page, you can do `hasPermission('team')` rather than having to test for each permission.
+For example, if you have a page that allows you to manage a team, you might have the permissions `team.view`, `team.edit`, `team.delete`. Then, to test access to the page, you can do `hasPermission('team')` rather than having to test for each permission.
 `
+
+# Seeker Parents/Children
+
+This allows for a permission and a role that have different seekers to be associated with each other. 
+
+For example, you may have a scenario where you have multiple organisations, and there are multiple teams inside each organisation. You may need to give some people access to all of the teams in an individual organisation, and then others just access to individual teams. You could do this by having a `team.view` permission that has a seeker type, `team`, and then a role called `Organisation Manager` that has seeker type `organisation`. Then, you would have to mofify the organisation and team models to tell the access control layer that there is a parent/child relationship.
+
+```php
+class Organisation extends Model implements IPermissionParent
+{
+    protected $table = 'organisations';
+
+    protected function getChildren($seekerType) {
+        if($seekerType == 'team') {
+            return $this->teams();
+        }
+    }
+
+    protected function teams() {
+        return $this->hasMany('...Models\Team');
+    }
+
+    ...
+}
+
+class Team extends Model implements IPermissionChild
+{
+    $table_name = 'teams';
+
+    protected function getChildren($seekerType) {
+        if($seekerType == 'team') {
+            return $this->teams();
+        }
+    }
+
+    protected function teams() {
+        return $this->hasMany('...Models\Team');
+    }
+
+    ...
+}
+```
 # Licence
 
 By [Louis Charette](https://github.com/lcharette). Copyright (c) 2017, free to use in personal and commercial software as per the MIT license.

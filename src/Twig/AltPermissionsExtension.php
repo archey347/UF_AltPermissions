@@ -1,24 +1,25 @@
 <?php
-/**
+
+/*
  * UserFrosting (http://www.userfrosting.com)
  *
  * @link      https://github.com/userfrosting/UserFrosting
- * @license   https://github.com/userfrosting/UserFrosting/blob/master/licenses/UserFrosting.md (MIT License)
+ * @copyright Copyright (c) 2019 Alexander Weissman
+ * @license   https://github.com/userfrosting/UserFrosting/blob/master/LICENSE.md (MIT License)
  */
+
 namespace UserFrosting\Sprinkle\AltPermissions\Twig;
 
 use Interop\Container\ContainerInterface;
-use UserFrosting\Sprinkle\Spanner\Database\Models\Club;
-use Twig\Extension\GlobalsInterface;
+use Slim\Container;
 
 /**
  * Extends Twig functionality for the AltPermissions sprinkle.
  *
  * @author Archey Barrell
  */
-class AltPermissionsExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface 
+class AltPermissionsExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
 {
-
     /**
      * @var ContainerInterface The global container object, which holds all your services.
      */
@@ -29,7 +30,7 @@ class AltPermissionsExtension extends \Twig_Extension implements \Twig_Extension
      *
      * @param ContainerInterface $services The global container object, which holds all your services.
      */
-    public function __construct(ContainerInterface $services)
+    public function __construct(Container $services)
     {
         $this->services = $services;
     }
@@ -51,20 +52,23 @@ class AltPermissionsExtension extends \Twig_Extension implements \Twig_Extension
      */
     public function getFunctions()
     {
-        return array(
+        return [
             // Add Twig function for checking permissions for a seeker
-            new \Twig_SimpleFunction('checkSeekerAccess', function ($slug, $seeker_id = "") {
-                $acl =  $this->services->acl; 
-                return $acl->hasPermission($this->services->currentUser, $slug, $seeker_id);     
+            new \Twig_SimpleFunction('checkSeekerAccess', function ($slug, $seeker_id = '') {
+                $acl = $this->services->acl;
+
+                return $acl->hasPermission($this->services->currentUser, $slug, $seeker_id);
             }),
             new \Twig_SimpleFunction('getSeekersForUser', function ($seeker_type) {
-                $acl =  $this->services->acl; 
-                return $acl->getSeekersForUser($this->services->currentUser, $seeker_type)->pluck('id');     
-            })
-        );
-    }   
+                $acl = $this->services->acl;
 
-    public function getGlobals() {
+                return $acl->getSeekersForUser($this->services->currentUser, $seeker_type)->pluck('id');
+            }),
+        ];
+    }
+
+    public function getGlobals()
+    {
         return [];
     }
 }
