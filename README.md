@@ -19,6 +19,14 @@ Edit UserFrosting `app/sprinkles/sprinkles.json` file and add the following to t
 
 Run `composer update` then `composer run-script bake` to install the sprinkle.
 
+# Usage
+
+## Permission Slug Inheritance
+
+If you have a collection of permisisons of actions that are available on a page, you can group these together using dot-delimiter.
+
+For example, if you have a page that allows you to manaeg a team, you might have the permissions `team.view`, `team.edit`, `team.delete`. Then, to test access to the page, you can do `hasPermission('team')` rather than having to test for each permission.
+`
 # Licence
 
 By [Louis Charette](https://github.com/lcharette). Copyright (c) 2017, free to use in personal and commercial software as per the MIT license.
