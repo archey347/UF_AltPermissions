@@ -25,7 +25,7 @@ Run `composer update` then `composer run-script bake` to install the sprinkle.
 
 If you have a collection of permisisons of actions that are available on a page, you can group these together using dot-delimiter.
 
-For example, if you have a page that allows you to manage a team, you might have the permissions `team.view`, `team.edit`, `team.delete`. Then, to test access to the page, you can do `hasPermission('team')` rather than having to test for each permission.
+For example, if you have a page that allows you to manage a team, you might have the permissions `team.view`, `team.edit`, `team.delete`. Then, to test access to the page, you can do `hasPermission('team')` rather than having to test for each permission. This will then pass if any one of the child permissions pass?
 `
 
 # Seeker Parents/Children
