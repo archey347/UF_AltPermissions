@@ -1,18 +1,18 @@
 <?php
 
 /*
- * UF AltPermissions
+ * UF AltPermissions Sprinkle
  *
- * @link https://github.com/lcharette/UF-AltPermissions
- *
- * @copyright Copyright (c) 2016 Louis Charette
- * @license https://github.com/lcharette/UF-AltPermissions/blob/master/licenses/UserFrosting.md (MIT License)
+ * @author    Louis Charette
+ * @copyright Copyright (c) 2018 Louis Charette
+ * @link      https://github.com/lcharette/UF_AltPermissions
+ * @license   https://github.com/lcharette/UF_AltPermissions/blob/master/LICENSE.md (MIT License)
  */
 
 namespace UserFrosting\Sprinkle\AltPermissions\Controller;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use UserFrosting\Fortress\Adapter\JqueryValidationAdapter;
@@ -36,8 +36,6 @@ class AuthController extends SimpleController
      *    Create a new ConfigManagerController object.
      *
      *    @param ContainerInterface $ci
-     *
-     *    @return void
      */
     public function __construct(ContainerInterface $ci)
     {
@@ -54,8 +52,6 @@ class AuthController extends SimpleController
      *    @param  Request $request
      *    @param  Response $response
      *    @param  array $args
-     *
-     *    @return void
      */
     public function getModalCreate(Request $request, Response $response, $args)
     {
@@ -126,8 +122,6 @@ class AuthController extends SimpleController
      *    @param  Request $request
      *    @param  Response $response
      *    @param  array $args
-     *
-     *    @return void
      */
     public function getUserList(Request $request, Response $response, $args)
     {
@@ -173,8 +167,6 @@ class AuthController extends SimpleController
      *    @param  Request $request
      *    @param  Response $response
      *    @param  array $args
-     *
-     *    @return void
      */
     public function create(Request $request, Response $response, $args)
     {
@@ -258,7 +250,7 @@ class AuthController extends SimpleController
 
         // All checks passed!  log events/activities and create role
         // Begin transaction - DB will be rolled back if an exception occurs
-        Capsule::transaction(function () use ($classMapper, $auth, $currentUser, $user, $role) {
+        Capsule::transaction(function () use ($auth) {
 
             // Save the auth data
             $auth->save();
@@ -288,8 +280,6 @@ class AuthController extends SimpleController
      *    @param  Request $request
      *    @param  Response $response
      *    @param  array $args
-     *
-     *    @return void
      */
     public function getModalEdit(Request $request, Response $response, $args)
     {
@@ -373,8 +363,6 @@ class AuthController extends SimpleController
      *    @param  Request $request
      *    @param  Response $response
      *    @param  array $args
-     *
-     *    @return void
      */
     public function updateInfo(Request $request, Response $response, $args)
     {
@@ -432,7 +420,7 @@ class AuthController extends SimpleController
         }
 
         // Begin transaction - DB will be rolled back if an exception occurs
-        Capsule::transaction(function () use ($currentUser, $auth, $newRole) {
+        Capsule::transaction(function () use ($auth, $newRole) {
             // Update the role and generate success messages
             // We are allowed to change the `auth` relation directly for the role
             // (It's expected to change for a given user/seeker combo)
@@ -470,8 +458,6 @@ class AuthController extends SimpleController
      *    @param  Request $request
      *    @param  Response $response
      *    @param  array $args
-     *
-     *    @return void
      */
     public function delete(Request $request, Response $response, $args)
     {
@@ -506,7 +492,7 @@ class AuthController extends SimpleController
         }*/
 
         // Begin transaction - DB will be rolled back if an exception occurs
-        Capsule::transaction(function () use ($auth, $currentUser) {
+        Capsule::transaction(function () use ($auth) {
             $auth->delete();
 
             // Create activity record
@@ -534,8 +520,6 @@ class AuthController extends SimpleController
      *    @param  Request $request
      *    @param  Response $response
      *    @param  array $args
-     *
-     *    @return void
      */
     public function getList(Request $request, Response $response, $args)
     {
